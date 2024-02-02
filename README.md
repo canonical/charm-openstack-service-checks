@@ -188,5 +188,5 @@ will need to provide the root CA certificate to the `trusted_ssl_ca`.
 Please contact Canonical's BootStack team via the "Submit a bug" link.
 Upstream Project Name
 
- * Website: https://launchpad.net/charm-openstack-service-checks
- * Bug tracker: https://bugs.launchpad.net/charm-openstack-service-checks
+ * Website: https://github.com/canonical/charm-openstack-service-checks
+ * Bug tracker: https://github.com/canonical/charm-openstack-service-checks/issues
