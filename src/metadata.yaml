@@ -7,7 +7,6 @@ tags:
   - openstack
   - ops
   - monitoring
-series: []
 provides:
   nrpe-external-master:
     interface: nrpe-external-master
