@@ -26,25 +26,22 @@ jobs:
       working-directory: ./src
 
   func:
-    uses: canonical/bootstack-actions/.github/workflows/func.yaml@v3
-    needs: lint-unit
+    uses: ['self-hosted', 'x64', 'jammy', 'xlarge']
+    # needs: lint-unit
     strategy:
       fail-fast: false
       matrix:
         command: ["TEST_JUJU3=1 make functional"]  # TEST_JUJU3 needed due https://github.com/openstack-charmers/zaza/blob/b22c2eed4c322f1dfc14ffb2d31e0dd18c911a40/setup.py#L47 to support Juju3+
         juju-channel: ["3.4/stable"]
-    with:
-      command: ${{ matrix.command }}
-      juju-channel: ${{ matrix.juju-channel }}
-      nested-containers: false
-      python-version: "3.10"
-      timeout-minutes: 120
-      action-operator: false
-      external-controller: true
-      runs-on: "['self-hosted', 'runner-os-svc-check']"
-      juju-controller: soleng-ci-ctrl-34
-      zaza-yaml: "LS0tCm1vZGVsX3NldHRpbmdzOgogIGltYWdlLXN0cmVhbTogcmVsZWFzZWQKcmVnaW9uOiBwcm9kc3RhY2s2CmNsb3VkOiBidWlsZGVyLWNsb3VkCmNyZWRlbnRpYWw6IGJ1aWxkZXItY2xvdWQtY3JlZAoK"
-    secrets:
-      juju-controllers-yaml: ${{ secrets.JUJU_CONTROLLERS_YAML }}
-      juju-accounts-yaml: ${{ secrets.JUJU_ACCOUNTS_YAML }}
-      openstack-auth-env: ${{ secrets.OPENSTACK_AUTH_ENV }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Setup Juju ${{ matrix.juju-channel }} environment
+        uses: charmed-kubernetes/actions-operator@main
+        with:
+          provider: lxd
+          juju-channel: ${{ matrix.juju-channel }}
+          bootstrap-options: '--bootstrap-constraints="virt-type=virtual-machine mem=8G"'
+      - name: Run functional tests
+        run: ${{ matrix.command }}
