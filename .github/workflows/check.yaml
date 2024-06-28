@@ -26,8 +26,8 @@ jobs:
       working-directory: ./src
 
   func:
-    uses: ['self-hosted', 'x64', 'jammy', 'xlarge']
-    # needs: lint-unit
+    runs-on: ['self-hosted', 'x64', 'jammy', 'xlarge']
+    needs: lint-unit
     strategy:
       fail-fast: false
       matrix:
