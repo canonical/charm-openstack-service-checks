@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# test CI
 """Load saved status of the allocations check and report to Nagios."""
 
 import json
