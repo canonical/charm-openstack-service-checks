@@ -27,7 +27,7 @@ jobs:
 
   func:
     uses: ['self-hosted', 'x64', 'jammy', 'xlarge']
-    # needs: lint-unit
+    needs: lint-unit
     strategy:
       fail-fast: false
       matrix:
