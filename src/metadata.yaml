@@ -1,19 +1,16 @@
 name: openstack-service-checks
 summary: OpenStack Services NRPE Checks
 description: OpenStack Services NRPE Checks
-maintainer: Bootstack Charmers <bootstack-charmers@lists.canonical.com>
+maintainers:
+  - Solutions Engineering <solutions-engineering@lists.canonical.com>
 subordinate: false
 tags:
   - openstack
   - ops
   - monitoring
-links:
-  documentation: https://discourse.charmhub.io/t/openstack-service-checks-docs-index/15086
-  contact: BootStack Charmers <bootstack-charmers@lists.canonical.com>
-  issues:
-    - https://github.com/canonical/charm-openstack-service-checks/issues
-  source:
-    - https://github.com/canonical/charm-openstack-service-checks
+docs: https://discourse.charmhub.io/t/openstack-service-checks-docs-index/15086
+issues: https://github.com/canonical/charm-openstack-service-checks/issues
+website: https://github.com/canonical/charm-openstack-service-checks
 provides:
   nrpe-external-master:
     interface: nrpe-external-master
