@@ -21,6 +21,7 @@ class FakeResource:
         self._type = type_
         self._id = id_
         self.status = status
+        self.device_id = "fake_device_id"
         for key, value in kwargs.items():
             setattr(self, key, value)
 

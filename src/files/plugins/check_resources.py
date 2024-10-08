@@ -308,6 +308,23 @@ def mechanism_warning_ids(connection, resource_type) -> Dict[str, str]:
         ]
         for ip in not_assigned_ips:
             warn_ids[ip] = "unassigned"
+
+    if resource_type == "port":
+        # Move DOWN ports from CRITICAL to warning if the instance was shutoff
+        all_ports = RESOURCES[resource_type](connection)
+        for port in all_ports:
+            try:
+                if port.status == "DOWN":
+                    server = connection.compute.get_server(port.device_id)
+                    if server.power_state == 4:  # 4 is SHUTOFF state
+                        warn_ids[port.id] = "SHUTOFF"
+            except openstack.exceptions.ResourceNotFound:
+                # device_id won't be available for internal ports, and we don't
+                # expect them to be shutdown deliberately either. Basically,
+                # for any reason, if power_state can't be determined, we ignore
+                # them, and they'll be reported as CRITICAL as before.
+                pass
+
     return warn_ids
 
 
