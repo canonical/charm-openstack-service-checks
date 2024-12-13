@@ -135,6 +135,6 @@ jobs:
           echo "$CHARM_PATH_JAMMY"
           export CHARM_PATH_FOCAL="$(pwd)/$(ls | grep '.*20.04.*\.charm$')"
           echo "$CHARM_PATH_FOCAL"
-          make functional
+          tox -e func
         env:
           TEST_JUJU3: "1"  # https://github.com/openstack-charmers/zaza/pull/653
