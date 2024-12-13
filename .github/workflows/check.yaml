@@ -1,50 +1,140 @@
-name: Check workflow running linter, unit and functional tests
+name: Tests
 
 on:
-  workflow_call:
   workflow_dispatch:
+  workflow_call:
   pull_request:
-    types: [opened, synchronize, reopened]
-    branches: [master, main]
-    paths-ignore:
-      - "**.md"
-      - "**.rst"
+    branches:
+      - main
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
   cancel-in-progress: true
 
 jobs:
-  lint-unit:
-    uses: canonical/bootstack-actions/.github/workflows/lint-unit.yaml@v2
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version: ["3.8", "3.10"]
-    with:
-      python-version: ${{ matrix.python-version }}
-      working-directory: ./src
 
-  func:
-    uses: canonical/bootstack-actions/.github/workflows/func.yaml@v3
-    needs: lint-unit
-    strategy:
-      fail-fast: false
-      matrix:
-        command: ["TEST_JUJU3=1 make functional"]  # TEST_JUJU3 needed due https://github.com/openstack-charmers/zaza/blob/b22c2eed4c322f1dfc14ffb2d31e0dd18c911a40/setup.py#L47 to support Juju3+
-        juju-channel: ["3.4/stable"]
-    with:
-      command: ${{ matrix.command }}
-      juju-channel: ${{ matrix.juju-channel }}
-      nested-containers: false
-      python-version: "3.10"
-      timeout-minutes: 120
-      action-operator: false
-      external-controller: true
-      runs-on: "['self-hosted', 'runner-os-svc-check']"
-      juju-controller: soleng-ci-ctrl-34
-      zaza-yaml: "LS0tCm1vZGVsX3NldHRpbmdzOgogIGltYWdlLXN0cmVhbTogcmVsZWFzZWQKcmVnaW9uOiBwcm9kc3RhY2s2CmNsb3VkOiBidWlsZGVyLWNsb3VkCmNyZWRlbnRpYWw6IGJ1aWxkZXItY2xvdWQtY3JlZAoK"
-    secrets:
-      juju-controllers-yaml: ${{ secrets.JUJU_CONTROLLERS_YAML }}
-      juju-accounts-yaml: ${{ secrets.JUJU_ACCOUNTS_YAML }}
-      openstack-auth-env: ${{ secrets.OPENSTACK_AUTH_ENV }}
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: python3 -m pip install tox
+
+      - name: Run linters
+        run: tox -e lint
+
+  unit:
+    name: Unit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: python3 -m pip install tox
+
+      - name: Run unit test
+        run: tox -e unit
+
+  integration:
+    name: Integration
+    needs: [lint, unit]
+    runs-on: ['self-hosted', 'jammy', 'X64', 'self-hosted-linux-amd64-jammy-private-endpoint-medium']
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install tox latest release
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install tox
+
+      - name: external controller juju config
+        run: |
+          mkdir -p $HOME/.local/share/juju
+          # The credential are stored in repository's secret as base64 encoded string.
+          # This help to avoid special characters that can interface with the parsing of YAML/JSON files.
+          echo ${{ secrets.JUJU_CONTROLLERS_YAML }} | base64 -d > $HOME/.local/share/juju/controllers.yaml
+          echo ${{ secrets.JUJU_ACCOUNTS_YAML }} | base64 -d > $HOME/.local/share/juju/accounts.yaml
+
+      - name: external controller openstack environment
+        run: |
+           # Workaround because github workflow doesn't allow to use secrets key
+           # word in an if conditional expression.
+           if [ "${{ secrets.OPENSTACK_AUTH_ENV }}" != '' ]; then
+             # Add mask to secret
+             # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#example-masking-a-generated-output-within-a-single-job
+             echo ${{ secrets.OPENSTACK_AUTH_ENV }} \
+                | base64 -d \
+                | grep -E 'OS_AUTH_URL|OS_USERNAME|OS_PASSWORD|OS_PROJECT_NAME|OS_PROJECT_ID' \
+                | awk -F'=' '{print $2}' \
+                | xargs -I {} echo "::add-mask::{}"
+             echo ${{ secrets.OPENSTACK_AUTH_ENV }} | base64 -d >> "$GITHUB_ENV"
+           else
+             echo "Skip because missing openstack-auth-env secrets"
+           fi
+
+      - name: append to zaza yaml
+        run: |
+           cat >> $HOME/.zaza.yaml <<EOF
+           ---
+           model_settings:
+             image-stream: released
+             update-status-hook-interval: 30s
+           region: prodstack6
+           cloud: builder-cloud
+           credential: builder-cloud-cred
+           EOF
+
+      - name: Configure latest lxd (to build the charm in)
+        uses: canonical/setup-lxd@2aa6f7caf7d1484298a64192f7f63a6684e648a4  # latest main at time of writing
+        with:
+          channel: latest/stable
+
+      - name: install external controller required packages
+        run: |
+           sudo snap install charmcraft --channel 3.x/stable --classic
+           sudo snap install juju --channel 3.4/stable --classic
+           sudo --preserve-env=http_proxy,https_proxy,no_proxy pip3 install tox
+           juju switch soleng-ci-ctrl-34
+           # Workaround to avoid missing cookies bug
+           # https://github.com/search?q=repo%3Ajuju%2Fpython-libjuju%20cookies_for_controller&type=code
+           juju show-controller soleng-ci-ctrl-34 &>/dev/null
+
+      - name: Show juju information
+        run: |
+          juju version
+          juju controllers | grep Version -A 1 | awk '{print $9}'
+
+      - name: Build the charm
+        run: charmcraft -v pack
+
+      - name: Build charm and run tests
+        run: |
+          export CHARM_PATH_JAMMY="$(pwd)/$(ls | grep '.*22.04.*\.charm$')"
+          echo "$CHARM_PATH_JAMMY"
+          export CHARM_PATH_FOCAL="$(pwd)/$(ls | grep '.*20.04.*\.charm$')"
+          echo "$CHARM_PATH_FOCAL"
+          make functional
+        env:
+          TEST_JUJU3: "1"  # https://github.com/openstack-charmers/zaza/pull/653
