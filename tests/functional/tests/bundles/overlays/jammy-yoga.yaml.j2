@@ -7,6 +7,8 @@ variables:
 series: jammy
 
 applications:
+  {{ charm_name }}:
+    charm: "{{ CHARM_PATH_JAMMY }}"
   rabbitmq-server:
     options:
       source: *openstack-origin
