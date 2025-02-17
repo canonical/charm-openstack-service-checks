@@ -1,3 +1,0 @@
-setuptools
-setuptools_scm[toml]
-flit_core<4,>=3.2.0

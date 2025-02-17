@@ -1,0 +1,5 @@
+setuptools
+setuptools_scm[toml]
+# NOTE: pbr 6.1.1 introduced a dependency on setuptools>=64, which is not available in the build environment constraints.
+pbr==6.1.0
+flit_core<4,>=3.2.0
