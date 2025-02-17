@@ -92,6 +92,11 @@ jobs:
           sudo apt update
           sudo apt install -y gcc
 
+      - name: View machine specs
+        run: |
+          df -h
+          free -m
+
       - name: Setup Python
         uses: actions/setup-python@v5
         with:

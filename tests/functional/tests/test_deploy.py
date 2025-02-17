@@ -260,7 +260,7 @@ class TestOpenStackServiceChecks(TestBase):
         result = model.run_on_unit(self.lead_unit_name, cmd)
         logging.info(result)
 
-        self.assertEquals(result.get("Code"), "0")
+        self.assertEqual(result.get("Code"), "0")
 
     def test_99_openstackservicechecks_invalid_keystone_workload_status(self):
         """Verify keystone workload status.
@@ -311,4 +311,4 @@ class TestOpenStackServiceChecksCinder(TestBase):
         cmd = "python3 /usr/local/lib/nagios/plugins/check_cinder_services.py"
         result = model.run_on_unit(self.lead_unit_name, cmd)
         logging.info(result)
-        self.assertEquals(result.get("Code"), "0")  # Get response from cinder
+        self.assertEqual(result.get("Code"), "0")  # Get response from cinder
