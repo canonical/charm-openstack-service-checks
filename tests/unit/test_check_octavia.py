@@ -111,7 +111,7 @@ def test_no_active_images(connect):
         in """
 CRITICAL: total_alarms[1], total_crit[1], total_ignored[0], ignoring r''
 Octavia requires image with tag octavia to create amphora, but none are active: bob-the-image({})
-""".format(  # noqa:E501
+""".format(
             amp_image.id
         )
     )
@@ -140,7 +140,7 @@ def test_no_fresh_images(connect):
         in """
 WARNING: total_alarms[1], total_crit[0], total_ignored[0], ignoring r''
 Octavia requires image with tag octavia to create amphora, but all images are older than 1 day(s): bob-the-image({})
-""".format(  # noqa:E501
+""".format(
             amp_image.id
         )
     )
@@ -175,9 +175,7 @@ Octavia requires image with tag octavia to create amphora, but all images are ol
         ),
     ],
 )
-def test_lb_operating_status(
-    connect, operating_status, monitor_id, nagios_message, nagios_status
-):
+def test_lb_operating_status(connect, operating_status, monitor_id, nagios_message, nagios_status):
     """Test alerting for LB operating status."""
     args = mock.MagicMock()
     args.ignored = r""

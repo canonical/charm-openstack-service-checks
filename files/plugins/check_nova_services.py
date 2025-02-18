@@ -46,9 +46,7 @@ def check_hosts_up(args, aggregate, hosts, services_compute):
         status_warn = True
         if counts["ok"] <= args.crit:
             status_crit = True
-        local_msg.append(
-            "Host Aggregate {} has {} hosts alive".format(aggregate, counts["ok"])
-        )
+        local_msg.append("Host Aggregate {} has {} hosts alive".format(aggregate, counts["ok"]))
     nova_status = {
         "agg_name": aggregate or null_aggregate_name,
         "msg_text": ", ".join(local_msg),
@@ -79,9 +77,7 @@ def check_nova_services(args, nova):
         status.append(check_hosts_up(args, agg["name"], hosts, services_compute))
     # find hosts that haven't been checked already
     hosts_checked = [item for sublist in hosts_checked for item in sublist]
-    hosts_not_checked = [
-        x["host"] for x in services_compute if x["host"] not in hosts_checked
-    ]
+    hosts_not_checked = [x["host"] for x in services_compute if x["host"] not in hosts_checked]
     if len(hosts_not_checked) > 0:
         status.append(check_hosts_up(args, None, hosts_not_checked, services_compute))
     status_crit = len([agg["critical"] for agg in status if agg["critical"]])

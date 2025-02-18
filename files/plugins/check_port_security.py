@@ -25,8 +25,8 @@ remediation made.
 When triggered directly (via nrpe), it will check auto remediation output file, raise
 nagios alert when file not exist, exceeds max age, or contains error in it.
 
-[0]: https://docs.openstack.org/project-deploy-guide/charm-deployment-guide/latest/app-hardware-offload.html  # noqa: E501
-"""
+[0]: https://docs.openstack.org/project-deploy-guide/charm-deployment-guide/latest/app-hardware-offload.html
+"""  # noqa: W505
 
 import argparse
 import logging
@@ -124,7 +124,7 @@ def disable_port_security(conn, port, dry_run=False):
         - A security group is assigned to the instance
         - Allowed address pairs are set for the instance
 
-    [0]: https://superuser.openstack.org/articles/managing-port-level-security-openstack/  # noqa: E501
+    [0]: https://superuser.openstack.org/articles/managing-port-level-security-openstack/
     """
     LOG.info("disable port security on port %s %s", port.id, port.name or "")
     # when get, use `is_port_security_enabled`

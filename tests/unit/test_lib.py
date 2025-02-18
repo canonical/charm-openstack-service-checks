@@ -53,8 +53,8 @@ def test_openstackservicechecks_get_keystone_credentials_unitdata(
     [
         (
             (
-                'username=nagios, password=password, region_name=RegionOne, auth_url="http://XX.XX.XX.XX:5000/v3",'  # noqa:E501
-                "credentials_project=services, domain=service_domain, volume_api_version=3"  # noqa:E501
+                'username=nagios, password=password, region_name=RegionOne, auth_url="http://XX.XX.XX.XX:5000/v3",'
+                "credentials_project=services, domain=service_domain, volume_api_version=3"
             ),
             {
                 "username": "nagios",
@@ -70,7 +70,7 @@ def test_openstackservicechecks_get_keystone_credentials_unitdata(
         ),
         (
             (
-                'username=nagios, password=password, region_name=RegionOne, auth_url="http://XX.XX.XX.XX:5000/v2.0",'  # noqa:E501
+                'username=nagios, password=password, region_name=RegionOne, auth_url="http://XX.XX.XX.XX:5000/v2.0",'
                 "credentials_project=services, volume_api_version=3"
             ),
             {
@@ -105,10 +105,7 @@ def test_openstackservicechecks_get_keystone_credentials_oscredentials(
 def test_get_rally_checks_context(skip_rally, result, openstackservicechecks):
     """Check that rally config context configuration works as expected."""
     openstackservicechecks.charm_config["skip-rally"] = skip_rally
-    expected = {
-        comp: result[num]
-        for num, comp in enumerate("cinder glance nova neutron".split())
-    }
+    expected = {comp: result[num] for num, comp in enumerate("cinder glance nova neutron".split())}
     assert openstackservicechecks._get_rally_checks_context() == expected
 
 
@@ -158,7 +155,7 @@ def test_get_resource_ids(value, exp_ids):
             {
                 "shortname": "networks",
                 "description": "Check networks: 1,2,3 (skips: )",
-                "check_cmd": "/usr/local/lib/nagios/plugins/check_resources.py network --id 1 --id 2 --id 3",  # noqa:E501
+                "check_cmd": "/usr/local/lib/nagios/plugins/check_resources.py network --id 1 --id 2 --id 3",
             },
         ),
         (
@@ -168,7 +165,7 @@ def test_get_resource_ids(value, exp_ids):
             {
                 "shortname": "servers",
                 "description": "Check servers: 1,2,3 (skips: )",
-                "check_cmd": "/usr/local/lib/nagios/plugins/check_resources.py server --id 1 --id 2 --id 3",  # noqa:E501
+                "check_cmd": "/usr/local/lib/nagios/plugins/check_resources.py server --id 1 --id 2 --id 3",
             },
         ),
         (
@@ -178,7 +175,7 @@ def test_get_resource_ids(value, exp_ids):
             {
                 "shortname": "servers",
                 "description": "Check servers: all (skips: 1)",
-                "check_cmd": "/usr/local/lib/nagios/plugins/check_resources.py server --all --skip-id 1",  # noqa:E501
+                "check_cmd": "/usr/local/lib/nagios/plugins/check_resources.py server --all --skip-id 1",
             },
         ),
     ],
@@ -401,7 +398,7 @@ def test__render_horizon_connectivity_check(mock_config):
     nrpe.add_check.assert_called_with(
         shortname="horizon",
         description="Check connectivity and login",
-        check_cmd=f"/usr/local/lib/nagios/plugins/check_horizon.py --ip {test_horizon_ip}",  # noqa:E501
+        check_cmd=f"/usr/local/lib/nagios/plugins/check_horizon.py --ip {test_horizon_ip}",
     )
     nrpe.reset_mock()
 
@@ -443,9 +440,7 @@ def test__render_horizon_ssl_cert_check(mock_config):
     ],
 )
 @mock.patch("charmhelpers.core.hookenv.config")
-def test__configure_check_ssl_cert_options(
-    mock_config, ignore_ocsp, max_validity, expected
-):
+def test__configure_check_ssl_cert_options(mock_config, ignore_ocsp, max_validity, expected):
     """Test configure check_ssl_cert_options."""
     mock_config.return_value = {
         "check_ssl_cert_ignore_ocsp": ignore_ocsp,
@@ -462,9 +457,7 @@ def test__configure_check_ssl_cert_options(
     ],
 )
 @mock.patch("charmhelpers.core.hookenv.config")
-def test__configure_check_ssl_cert_options_exception(
-    mock_config, ignore_ocsp, max_validity
-):
+def test__configure_check_ssl_cert_options_exception(mock_config, ignore_ocsp, max_validity):
     """Test configure check_ssl_cert_options raising exception."""
     mock_config.return_value = {
         "check_ssl_cert_ignore_ocsp": ignore_ocsp,
@@ -644,10 +637,7 @@ def test_create_endpoint_checks__maximum_validity(
     mock_config.return_value = {"check-ssl-cert-maximum-validity": -2}
     with pytest.raises(OSCConfigError) as err:
         OSCHelper().create_endpoint_checks()
-    assert (
-        err.value.message == "check_ssl_cert_maximum_validity "
-        "does not support value `-2`"
-    )
+    assert err.value.message == "check_ssl_cert_maximum_validity " "does not support value `-2`"
 
     mock_render_https.assert_called_with(
         **expected_args,

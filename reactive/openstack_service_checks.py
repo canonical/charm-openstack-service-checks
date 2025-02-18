@@ -173,9 +173,7 @@ def get_credentials():
         creds = helper.get_keystone_credentials()
         if not creds:
             hookenv.log("render_config: No credentials yet, skipping")
-            hookenv.status_set(
-                "blocked", "Missing os-credentials vars: {}".format(error)
-            )
+            hookenv.status_set("blocked", "Missing os-credentials vars: {}".format(error))
             return
 
         volume_api_version = helper.get_cinder_api_version()
@@ -210,22 +208,15 @@ def render_config():
             subprocess.call(["/usr/sbin/update-ca-certificates", "--fresh"])
 
         except subprocess.CalledProcessError as error:
-            hookenv.log(
-                "update-ca-certificates failed: {}".format(error), hookenv.ERROR
-            )
+            hookenv.log("update-ca-certificates failed: {}".format(error), hookenv.ERROR)
             hookenv.status_set("blocked", "update-ca-certificates error. check logs")
             return
         except PermissionError as error:
-            hookenv.log(
-                "update-ca-certificates failed: {}".format(error), hookenv.ERROR
-            )
+            hookenv.log("update-ca-certificates failed: {}".format(error), hookenv.ERROR)
             hookenv.status_set("blocked", "update-ca-certificates error. check logs")
             return
 
-    hookenv.log(
-        "render_config: Got credentials for"
-        " username={}".format(creds.get("username"))
-    )
+    hookenv.log("render_config: Got credentials for" " username={}".format(creds.get("username")))
 
     try:
         helper.render_checks(creds)
@@ -364,9 +355,7 @@ def parse_hooks():
 @when("openstack-service-checks.configured")
 def nrpe_relation_departed():
     """Cleanup after the nrpe relation is removed."""
-    hookenv.log(
-        "nrpe-external-master not available (relation departed), clearing flags"
-    )
+    hookenv.log("nrpe-external-master not available (relation departed), clearing flags")
     clear_flag("openstack-service-checks.installed")
     clear_flag("openstack-service-checks.configured")
 
@@ -376,18 +365,14 @@ def nrpe_relation_departed():
 def set_final_status():
     """Set the final status of the charm as we leave hook execution."""
     if hookenv.config("check-horizon") and not is_flag_set("horizon.initialized"):
-        hookenv.status_set(
-            "blocked", "Relation with horizon required for horizon checks"
-        )
+        hookenv.status_set("blocked", "Relation with horizon required for horizon checks")
 
     if is_flag_set("dashboard-ip.missing"):
         hookenv.status_set("blocked", "Missing openstack-dashboard IP")
 
 
 def _set_keystone_error_workload_status(keystone_error):
-    error_status_message = (
-        "Failed to create endpoint checks due issue communicating with Keystone"
-    )
+    error_status_message = "Failed to create endpoint checks due issue communicating with Keystone"
     hookenv.log(
         "{}. Error:\n{}".format(error_status_message, keystone_error),
         level=hookenv.ERROR,

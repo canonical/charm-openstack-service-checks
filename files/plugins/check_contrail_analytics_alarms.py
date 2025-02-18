@@ -142,9 +142,7 @@ def main():
         default="/var/lib/nagios/nagios.novarc",
         help="Novarc file to use for this check",
     )
-    parser.add_argument(
-        "--host", "-H", dest="host", nargs=1, help="Contrail Analytics Virtual IP"
-    )
+    parser.add_argument("--host", "-H", dest="host", nargs=1, help="Contrail Analytics Virtual IP")
     parser.add_argument(
         "--ignored",
         dest="ignored",

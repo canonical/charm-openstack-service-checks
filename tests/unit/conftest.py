@@ -60,9 +60,7 @@ def mock_hookenv_config(monkeypatch):
 @pytest.fixture
 def mock_remote_unit(monkeypatch):
     """Mock remote_unit as unit-mock/0."""
-    monkeypatch.setattr(
-        "lib_openstack_service_checks.hookenv.remote_unit", lambda: "unit-mock/0"
-    )
+    monkeypatch.setattr("lib_openstack_service_checks.hookenv.remote_unit", lambda: "unit-mock/0")
 
 
 @pytest.fixture
@@ -94,9 +92,7 @@ def mock_endpoints(monkeypatch):
     """Mock service endpoint (Base Mock)."""
     monkeypatch.setattr("charmhelpers.core.hookenv.config", mock.Mock())
     monkeypatch.setattr("lib_openstack_service_checks.NRPE", mock.Mock())
-    monkeypatch.setattr(
-        "lib_openstack_service_checks.OSCHelper.get_keystone_client", mock.Mock()
-    )
+    monkeypatch.setattr("lib_openstack_service_checks.OSCHelper.get_keystone_client", mock.Mock())
 
 
 @pytest.fixture
@@ -153,9 +149,7 @@ def openstackservicechecks(tmpdir, mock_hookenv_config, mock_charm_dir, monkeypa
     helper = OSCHelper()
 
     # Any other functions that load helper will get this version
-    monkeypatch.setattr(
-        "lib_openstack_service_checks.hookenv.log", lambda msg, level="INFO": None
-    )
+    monkeypatch.setattr("lib_openstack_service_checks.hookenv.log", lambda msg, level="INFO": None)
     monkeypatch.setattr("lib_openstack_service_checks.OSCHelper", lambda: helper)
 
     return helper

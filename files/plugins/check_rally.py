@@ -23,9 +23,7 @@ def print_results(results):
             "skip": "WARNING",  # 1
         }
     )
-    return_codes = {
-        msg: code for code, msg in enumerate(["OK", "WARNING", "CRITICAL", "UNKNOWN"])
-    }
+    return_codes = {msg: code for code, msg in enumerate(["OK", "WARNING", "CRITICAL", "UNKNOWN"])}
     rc = return_codes["OK"]
     summary = collections.defaultdict(lambda: 0)
 
@@ -45,9 +43,7 @@ def print_results(results):
                 continue
 
             test_status = test_re.groups()[0]
-            output.append(
-                "{}: {}".format(status_message[test_status], result["message"])
-            )
+            output.append("{}: {}".format(status_message[test_status], result["message"]))
             summary[test_status] += 1
 
     # make the first line carry the worst event out of all the parsed ones
@@ -55,9 +51,7 @@ def print_results(results):
     # as critical
     nagios_status = "OK"
     for status_msg in ["CRITICAL", "WARNING", "UNKNOWN", "OK"]:
-        status = [
-            msg for msg in status_message.keys() if status_message[msg] == status_msg
-        ]
+        status = [msg for msg in status_message.keys() if status_message[msg] == status_msg]
         if not status or status[0] not in summary:
             continue
 
@@ -71,9 +65,7 @@ def print_results(results):
         details = ", ".join(
             [
                 "{}[{}]".format(status_msg, summary[status_msg])
-                for status_msg in sorted(
-                    summary, key=lambda status: summary[status], reverse=True
-                )
+                for status_msg in sorted(summary, key=lambda status: summary[status], reverse=True)
             ]
         )
         print("{}: {}".format(nagios_status, details))

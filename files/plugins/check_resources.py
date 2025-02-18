@@ -51,9 +51,7 @@ FLOATING_IP_RESOURCES = {
 
 PORT_RESOURCES = {
     "network:dhcp": lambda conn: conn.network.ports(device_owner="network:dhcp"),
-    "network:distributed": lambda conn: conn.network.ports(
-        device_owner="network:distributed"
-    ),
+    "network:distributed": lambda conn: conn.network.ports(device_owner="network:distributed"),
 }
 RESOURCES_BY_EXISTENCE = ["security-group", "subnet", "network"]
 
@@ -196,9 +194,7 @@ def parse_arguments():
         parser.error("'{}' resource is not supported".format(args.resource))
 
     if args.all and args.resource in RESOURCES_BY_EXISTENCE:
-        parser.error(
-            "flag '--all' is not supported with " "resource {}".format(args.resource)
-        )
+        parser.error("flag '--all' is not supported with " "resource {}".format(args.resource))
     if args.all and args.id:
         parser.error("--all/--id' are mutually exclusive")
     elif not args.all and not args.id:
@@ -225,9 +221,7 @@ def _create_title(resource, results):
         titles.append(WARNING_MESSAGE.format(len(results.warning), results.count))
 
     if results.ok:
-        titles.append(
-            OK_MESSAGE.format(len(results.ok), results.count - len(results.skipped))
-        )
+        titles.append(OK_MESSAGE.format(len(results.ok), results.count - len(results.skipped)))
         if len(results.skipped) > 0:
             titles.append(SKIP_MESSAGE.format(len(results.skipped)))
 
@@ -279,10 +273,10 @@ def mechanism_skip_ids(connection, resource_type) -> List[str]:
     skip_ids = []
     if resource_type == "port":
         # Skip local port which is created as Metadata Proxy Management
-        # https://docs.openstack.org/networking-ovn/latest/contributor/design/metadata_api.html#metadata-proxy-management-logic  # noqa
-        localport_ids = [
-            port.id for port in PORT_RESOURCES["network:dhcp"](connection)
-        ] + [port.id for port in PORT_RESOURCES["network:distributed"](connection)]
+        # https://docs.openstack.org/networking-ovn/latest/contributor/design/metadata_api.html#metadata-proxy-management-logic
+        localport_ids = [port.id for port in PORT_RESOURCES["network:dhcp"](connection)] + [
+            port.id for port in PORT_RESOURCES["network:distributed"](connection)
+        ]
         skip_ids += localport_ids
         # Skip unbound ports
         all_ports = RESOURCES[resource_type](connection)
@@ -303,9 +297,7 @@ def mechanism_warning_ids(connection, resource_type) -> Dict[str, str]:
     warn_ids = {}
     if resource_type == "floating-ip":
         # Unassigned floating ip should not be CRITICAL
-        not_assigned_ips = [
-            ip.id for ip in FLOATING_IP_RESOURCES["unassigned"](connection)
-        ]
+        not_assigned_ips = [ip.id for ip in FLOATING_IP_RESOURCES["unassigned"](connection)]
         for ip in not_assigned_ips:
             warn_ids[ip] = "unassigned"
 
@@ -364,9 +356,7 @@ def check(resource_type, ids, skip=None, select=None, check_all=False):
     for resource in _resource_filter(resources, ids, skip, check_all, select):
         checked_ids.append(resource.id)
         if resource.id in warn_ids:
-            results.add_result(
-                resource_type, resource.id, warn_ids[resource.id], warn=True
-            )
+            results.add_result(resource_type, resource.id, warn_ids[resource.id], warn=True)
         elif resource_type not in RESOURCES_BY_EXISTENCE:
             resource_status = getattr(resource, "status", "UNKNOWN")
             results.add_result(resource_type, resource.id, resource_status)

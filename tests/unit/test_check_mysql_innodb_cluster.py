@@ -59,7 +59,7 @@ CRITICAL_RESP_DATA = {
         [
             CRITICAL_RESP_DATA,
             2,
-            "CRITICAL: instances 10.5.0.184:9104 can't get metrics. Please check exporter permission and mysql status",  # noqa
+            "CRITICAL: instances 10.5.0.184:9104 can't get metrics. Please check exporter permission and mysql status",
         ],
     ],
 )

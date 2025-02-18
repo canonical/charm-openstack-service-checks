@@ -207,8 +207,7 @@ class OSCHelper:
             creds = {}
 
         common_attrs = (
-            "username password region_name auth_url"
-            " credentials_project volume_api_version"
+            "username password region_name auth_url" " credentials_project volume_api_version"
         ).split()
         all_attrs = common_attrs + extra_attrs
         missing = [k for k in all_attrs if k not in ident_creds]
@@ -362,9 +361,7 @@ class OSCHelper:
 
     def _render_cinder_checks(self, nrpe):
         # Cinder services health
-        cinder_check_command = os.path.join(
-            self.plugins_dir, "check_cinder_services.py"
-        )
+        cinder_check_command = os.path.join(self.plugins_dir, "check_cinder_services.py")
         check_command = "{} {}".format(cinder_check_command, self.skip_disabled)
         nrpe.add_check(
             shortname="cinder_services",
@@ -455,11 +452,7 @@ class OSCHelper:
 
         endpoint = endpoint_from_name("prometheus")
 
-        if (
-            len(endpoint.services()) == 0
-            or not endpoint
-            or not self.check_mysql_innodb_cluster
-        ):
+        if len(endpoint.services()) == 0 or not endpoint or not self.check_mysql_innodb_cluster:
             self._remove_mysql_innodb_cluster_checks(nrpe)
             return
 
@@ -517,9 +510,7 @@ class OSCHelper:
         )
 
         # NOTE: the actual check runs in cron to prevent NRPE timeouts on larger clouds
-        cron_script = os.path.join(
-            hookenv.charm_dir(), "files", "run_allocation_checks.py"
-        )
+        cron_script = os.path.join(hookenv.charm_dir(), "files", "run_allocation_checks.py")
         host.rsync(cron_script, self.scripts_dir, options=["--executability"])
 
         cron_cmd = os.path.join(self.scripts_dir, "run_allocation_checks.py")
@@ -570,21 +561,15 @@ class OSCHelper:
         """Render NRPE check for OpenStack resource."""
         ids = self._get_resource_ids("check-{}s".format(resource))
         if "all" in ids:
-            raise OSCConfigError(
-                "check-{}s does not support value " "`all`".format(resource)
-            )
+            raise OSCConfigError("check-{}s does not support value " "`all`".format(resource))
 
         check_kwargs = self._get_resource_check_kwargs(resource, ids)
         if self.charm_config.get("check-{}s".format(resource)):
             nrpe.add_check(**check_kwargs)
-            hookenv.log(
-                "Added nrpe check {shortname}: {check_cmd}".format(**check_kwargs)
-            )
+            hookenv.log("Added nrpe check {shortname}: {check_cmd}".format(**check_kwargs))
         else:
             nrpe.remove_check(**check_kwargs)
-            hookenv.log(
-                "Removed nrpe check {shortname}: {check_cmd}".format(**check_kwargs)
-            )
+            hookenv.log("Removed nrpe check {shortname}: {check_cmd}".format(**check_kwargs))
 
     def _render_resources_check_by_status(self, nrpe, resource):
         """Render NRPE check for OpenStack resource."""
@@ -596,14 +581,10 @@ class OSCHelper:
         check_kwargs = self._get_resource_check_kwargs(resource, ids, skip_ids)
         if self.charm_config.get("check-{}s".format(resource)):
             nrpe.add_check(**check_kwargs)
-            hookenv.log(
-                "Added nrpe check {shortname}: {check_cmd}".format(**check_kwargs)
-            )
+            hookenv.log("Added nrpe check {shortname}: {check_cmd}".format(**check_kwargs))
         else:
             nrpe.remove_check(**check_kwargs)
-            hookenv.log(
-                "Removed nrpe check {shortname}: {check_cmd}".format(**check_kwargs)
-            )
+            hookenv.log("Removed nrpe check {shortname}: {check_cmd}".format(**check_kwargs))
 
     def render_horizon_checks(self, horizon_ip):
         """Render nrpe checks for horizon.
@@ -620,8 +601,7 @@ class OSCHelper:
         nrpe.add_check(
             shortname="horizon",
             description="Check connectivity and login",
-            check_cmd=os.path.join(self.plugins_dir, "check_horizon.py")
-            + f" --ip {horizon_ip}",  # noqa: W503
+            check_cmd=os.path.join(self.plugins_dir, "check_horizon.py") + f" --ip {horizon_ip}",
         )
         hookenv.log("Added nrpe connectivity and login check for horizon.")
 
@@ -733,8 +713,7 @@ class OSCHelper:
                 check_ssl_cert_options += f" --maximum-validity {maxval}"
             else:
                 raise OSCConfigError(
-                    "check_ssl_cert_maximum_validity "
-                    "does not support value `{}`".format(maxval)
+                    "check_ssl_cert_maximum_validity " "does not support value `{}`".format(maxval)
                 )
         return check_ssl_cert_options
 
@@ -752,17 +731,13 @@ class OSCHelper:
             )
             nrpe.add_check(
                 shortname=kwargs.get("shortname", "check_http"),
-                description=kwargs.get(
-                    "description", "Added nrpe check for http endpoint."
-                ),
+                description=kwargs.get("description", "Added nrpe check for http endpoint."),
                 check_cmd=command,
             )
             hookenv.log(kwargs.get("create_log", "Added nrpe check for http endpoint"))
         else:
             nrpe.remove_check(shortname=kwargs.get("shortname", "check_http"))
-            hookenv.log(
-                kwargs.get("remove_log", "Removed nrpe check for http endpoint")
-            )
+            hookenv.log(kwargs.get("remove_log", "Removed nrpe check for http endpoint"))
 
     def _render_https_endpoint_checks(self, url, host, port, nrpe, interface, **kwargs):
         """Render NRPE checks for https endpoint and its certificate chain."""
@@ -780,17 +755,13 @@ class OSCHelper:
             )
             nrpe.add_check(
                 shortname=kwargs.get("shortname", "check_ssl_cert"),
-                description=kwargs.get(
-                    "description", "Added nrpe check for https endpoint."
-                ),
+                description=kwargs.get("description", "Added nrpe check for https endpoint."),
                 check_cmd=command,
             )
             hookenv.log(kwargs.get("create_log", "Added nrpe check for https endpoint"))
         else:
             nrpe.remove_check(shortname=kwargs.get("shortname", "check_ssl_cert"))
-            hookenv.log(
-                kwargs.get("remove_log", "Removed nrpe check for https endpoint")
-            )
+            hookenv.log(kwargs.get("remove_log", "Removed nrpe check for https endpoint"))
 
     def _normalize_endpoint_attr(self, endpoint):
         """Normalize the attributes in service catalog endpoint between v2 and v3."""
@@ -853,9 +824,7 @@ class OSCHelper:
                 # https://docs.openstack.org/keystone/pike/configuration.html#health-check-middleware
                 if service_name == "keystone":
                     continue
-                endpoint.interface, endpoint.url = self._normalize_endpoint_attr(
-                    endpoint
-                )
+                endpoint.interface, endpoint.url = self._normalize_endpoint_attr(endpoint)
 
             check_url = urlparse(endpoint.url)
             host, port = self._split_url(check_url.netloc, check_url.scheme)
@@ -934,8 +903,7 @@ class OSCHelper:
             from keystoneclient.auth.identity import v3 as kst_version
 
             auth_fields = (
-                "username password auth_url user_domain_name "
-                "project_domain_name project_name"
+                "username password auth_url user_domain_name " "project_domain_name project_name"
             ).split()
         else:
             from keystoneclient.v2_0 import client
@@ -950,8 +918,7 @@ class OSCHelper:
 
         if self._keystone_client is None:
             raise OSCKeystoneServerError(
-                "Unable to list the endpoints yet: "
-                "could not connect to the Identity Service"
+                "Unable to list the endpoints yet: " "could not connect to the Identity Service"
             )
 
     @property
@@ -990,15 +957,11 @@ class OSCHelper:
             keystoneauth1.exceptions.connection.ConnectFailure,
         ) as server_error:
             raise OSCKeystoneServerError(
-                "Keystone server unable to list keystone {}: {}".format(
-                    server_error, object_type
-                )
+                "Keystone server unable to list keystone {}: {}".format(server_error, object_type)
             )
         except keystoneauth1.exceptions.http.BadRequest as client_error:
             raise OSCKeystoneClientError(
-                "Keystone client error when listing {}: {}".format(
-                    client_error, object_type
-                )
+                "Keystone client error when listing {}: {}".format(client_error, object_type)
             )
         except keystoneauth1.exceptions.connection.SSLError as ssl_error:
             raise OSCSslError(
@@ -1011,9 +974,7 @@ class OSCHelper:
         if not os.path.exists(novarc):
             return False
 
-        output = subprocess.check_output(
-            ["/bin/bash", "-c", "source {} && env".format(novarc)]
-        )
+        output = subprocess.check_output(["/bin/bash", "-c", "source {} && env".format(novarc)])
         i = 0
         for line in output.decode("utf-8").splitlines():
             if not line.startswith("OS_"):
@@ -1038,9 +999,7 @@ class OSCHelper:
                 cmd.extend(user_cmd)
             else:
                 hookenv.log(
-                    "_run_as - can't run as user {} the command: {}".format(
-                        user, user_cmd
-                    )
+                    "_run_as - can't run as user {} the command: {}".format(user, user_cmd)
                 )
                 return False
 
@@ -1198,11 +1157,7 @@ class OSCHelper:
             "user": self._rallyuser,
             "cmd": os.path.join(self.scripts_dir, "run_rally.py"),
         }
-        content += (
-            "\n#\n{schedule} {user} timeout -k 840s -s SIGTERM 780s {cmd}".format(
-                **context
-            )
-        )
+        content += "\n#\n{schedule} {user} timeout -k 840s -s SIGTERM 780s {cmd}".format(**context)
         with open(self.rally_cron_file, "w") as fd:
             fd.write("# Juju generated - DO NOT EDIT\n{}\n\n".format(content))
 
@@ -1266,8 +1221,7 @@ class OSCHelper:
                 return
             except OSCKeystoneError as keystone_error:
                 error_status_message = (
-                    "Failed to create endpoint checks due issue "
-                    "communicating with Keystone"
+                    "Failed to create endpoint checks due issue " "communicating with Keystone"
                 )
                 hookenv.log(
                     "{}. Error:\n{}".format(error_status_message, keystone_error),
@@ -1279,6 +1233,4 @@ class OSCHelper:
             try:
                 return cinder_name.rsplit("v", maxsplit=1)[1]
             except IndexError as err:
-                raise ValueError(
-                    f"Cinder API version {cinder_name} has unknown format"
-                ) from err
+                raise ValueError(f"Cinder API version {cinder_name} has unknown format") from err

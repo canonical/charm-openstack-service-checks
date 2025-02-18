@@ -43,9 +43,7 @@ def check_status(resp_dict):
         msg = (
             "{}: instances {} can't get metrics."
             " Please check exporter permission and mysql status"
-        ).format(
-            NAGIOS_STATUS[NAGIOS_STATUS_CRITICAL], ",".join(not_up_endpoints.keys())
-        )
+        ).format(NAGIOS_STATUS[NAGIOS_STATUS_CRITICAL], ",".join(not_up_endpoints.keys()))
         return NAGIOS_STATUS_CRITICAL, msg
 
     return NAGIOS_STATUS_OK, NAGIOS_STATUS[NAGIOS_STATUS_OK]
