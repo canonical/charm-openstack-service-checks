@@ -45,9 +45,7 @@ def test_check_hosts_up(is_skip_disabled, num_nodes):
     if num_nodes <= 2:
         # 1 host enabled + 1 host disabled == 1 host alive (<=1)
         status_critical = True
-        msg_text = "{}, Host Aggregate (not-part-of-any-agg) has 1 hosts alive".format(
-            msg_text
-        )
+        msg_text = "{}, Host Aggregate (not-part-of-any-agg) has 1 hosts alive".format(msg_text)
     else:
         # more than args.crit (1) hosts alive (4)
         status_critical = False
@@ -58,9 +56,7 @@ def test_check_hosts_up(is_skip_disabled, num_nodes):
         "critical": status_critical,
         "warning": not is_skip_disabled or num_nodes <= args.warn,
     }
-    actual = check_nova_services.check_hosts_up(
-        args, aggregate, hosts, services_compute
-    )
+    actual = check_nova_services.check_hosts_up(args, aggregate, hosts, services_compute)
     assert actual == expected
 
 
@@ -114,6 +110,4 @@ def test_check_nova_services(is_skip_disabled, monkeypatch):
     else:
         with pytest.raises(nagios_plugin3.WarnError) as excinfo:
             check_nova_services.check_nova_services(args, nova)
-        assert (
-            str(excinfo.value) == "WARNING: nova-compute, Host juju-3efade-0 disabled"
-        )
+        assert str(excinfo.value) == "WARNING: nova-compute, Host juju-3efade-0 disabled"

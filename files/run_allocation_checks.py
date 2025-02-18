@@ -78,9 +78,7 @@ def get_instances(connection, placement_client):
     # get allocation data from placement
     resource_providers = get_resource_providers(placement_client)
     for rp in resource_providers:
-        placement_instances[rp["name"]] = get_placement_instances(
-            placement_client, rp["uuid"]
-        )
+        placement_instances[rp["name"]] = get_placement_instances(placement_client, rp["uuid"])
 
         for uuid in placement_instances[rp["name"]]:
             if "placement" not in instances[uuid]:
@@ -153,9 +151,8 @@ def filter_checks(alarms, ignored=DEFAULT_IGNORED):
         status = NAGIOS_STATUS_WARNING
     else:
         status = NAGIOS_STATUS_OK
-    msg = (
-        "total_alarms[{}], total_crit[{}], total_ignored[{}], "
-        "ignoring r'{}'\n".format(len(full), total_crit, len(ignoring), ignored)
+    msg = "total_alarms[{}], total_crit[{}], total_ignored[{}], " "ignoring r'{}'\n".format(
+        len(full), total_crit, len(ignoring), ignored
     )
     msg += "\n".join(_.desc for _ in sorted(important))
     return status, msg
@@ -183,9 +180,7 @@ def save_status(status, message):
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description="Check allocations in Nova and Placement"
-    )
+    parser = argparse.ArgumentParser(description="Check allocations in Nova and Placement")
     parser.add_argument(
         "--env",
         dest="env",

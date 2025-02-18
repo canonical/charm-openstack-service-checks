@@ -23,9 +23,7 @@ def get_backup_output_filename():
     statusfile = os.path.join(HISTORY_FOLDER, "rally.status.{}.{}".format(weekday, i))
     while os.path.exists(statusfile):
         i += 1
-        statusfile = os.path.join(
-            HISTORY_FOLDER, "rally.status.{}.{}".format(weekday, i)
-        )
+        statusfile = os.path.join(HISTORY_FOLDER, "rally.status.{}.{}".format(weekday, i))
 
     return statusfile
 
@@ -34,15 +32,11 @@ def _load_envvars(novarc="/var/lib/nagios/nagios.novarc"):
     if not os.path.exists(novarc):
         return False
 
-    output = subprocess.check_output(
-        ["/bin/bash", "-c", "source {} && env".format(novarc)]
-    )
+    output = subprocess.check_output(["/bin/bash", "-c", "source {} && env".format(novarc)])
     i = 0
     for line in output.decode("utf-8").splitlines():
         key = line.split("=")[0]
-        if not (
-            key.startswith("OS_") or key.count("proxy") > 0 or key.count("PROXY") > 0
-        ):
+        if not (key.startswith("OS_") or key.count("proxy") > 0 or key.count("PROXY") > 0):
             continue
         key, value = line.split("=")
         os.environ[key] = value
@@ -50,9 +44,7 @@ def _load_envvars(novarc="/var/lib/nagios/nagios.novarc"):
 
     os.environ["SHELL"] = "/bin/bash"
     os.environ["HOME"] = "/home/nagiososc"
-    os.environ["PATH"] = (
-        "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin"
-    )
+    os.environ["PATH"] = "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin"
 
     return i >= 3
 

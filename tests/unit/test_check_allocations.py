@@ -202,8 +202,7 @@ def test_ignored(servers, rp):
     assert len(alerts) == 2
     assert status_message == (
         0,
-        "OK: total_alarms[2], total_crit[0], total_ignored[2], "
-        "ignoring r'(?:vm-1)|(?:vm-2)'\n",
+        "OK: total_alarms[2], total_crit[0], total_ignored[2], " "ignoring r'(?:vm-1)|(?:vm-2)'\n",
     )
 
 
