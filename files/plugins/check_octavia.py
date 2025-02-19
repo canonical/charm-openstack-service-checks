@@ -48,9 +48,8 @@ def filter_checks(alarms, ignored=DEFAULT_IGNORED):
         status = NAGIOS_STATUS_WARNING
     else:
         status = NAGIOS_STATUS_OK
-    msg = (
-        "total_alarms[{}], total_crit[{}], total_ignored[{}], "
-        "ignoring r'{}'\n".format(len(full), total_crit, len(ignoring), ignored)
+    msg = "total_alarms[{}], total_crit[{}], total_ignored[{}], " "ignoring r'{}'\n".format(
+        len(full), total_crit, len(ignoring), ignored
     )
     msg += "\n".join(_.desc for _ in sorted(important))
     return status, msg
@@ -100,9 +99,7 @@ def check_loadbalancers(connection):
     bad_lbs = [
         (
             NAGIOS_STATUS_CRITICAL,
-            "loadbalancer {} provisioning_status is {}".format(
-                lb.id, lb.provisioning_status
-            ),
+            "loadbalancer {} provisioning_status is {}".format(lb.id, lb.provisioning_status),
         )
         for lb in lb_enabled
         if lb.provisioning_status != "ACTIVE"
@@ -156,9 +153,7 @@ def check_pools(connection):
     bad_pools = [
         (
             NAGIOS_STATUS_CRITICAL,
-            "pool {} provisioning_status is {}".format(
-                pool.id, pool.provisioning_status
-            ),
+            "pool {} provisioning_status is {}".format(pool.id, pool.provisioning_status),
         )
         for pool in pools_enabled
         if pool.provisioning_status != "ACTIVE"
@@ -193,17 +188,16 @@ def check_image(connection, tag, days):
     images = list(img_mgr.images(tag=tag))
 
     if not images:
-        message = (
-            "Octavia requires image with tag {} to create amphora, but none exist"
-        ).format(tag)
+        message = ("Octavia requires image with tag {} to create amphora, but none exist").format(
+            tag
+        )
         return [(NAGIOS_STATUS_CRITICAL, message)]
 
     active_images = [image for image in images if image.status == "active"]
     if not active_images:
         details = ["{}({})".format(image.name, image.id) for image in images]
         message = (
-            "Octavia requires image with tag {} to create amphora, "
-            "but none are active: {}"
+            "Octavia requires image with tag {} to create amphora, " "but none are active: {}"
         ).format(tag, ", ".join(details))
         return [(NAGIOS_STATUS_CRITICAL, message)]
 

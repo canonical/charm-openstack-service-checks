@@ -41,9 +41,7 @@ class FakeResource:
 class FakePortResource(FakeResource):
     """Helper object representing the fake port resource."""
 
-    def __init__(
-        self, type_, id_, status=None, device_owner="", binding_vif_type=None, **kwargs
-    ):
+    def __init__(self, type_, id_, status=None, device_owner="", binding_vif_type=None, **kwargs):
         """Initialize of FakePortResource."""
         super().__init__(type_, id_, status, **kwargs)
         self._device_owner = device_owner
@@ -156,9 +154,7 @@ def test_check_passed(servers, check_kwargs, exp_ids):
             messages = os.linesep.join(
                 "server '{}' is in ACTIVE status" "".format(_id) for _id in exp_ids
             )
-            output = "servers {0}/{0} passed{1}{2}" "".format(
-                len(exp_ids), os.linesep, messages
-            )
+            output = "servers {0}/{0} passed{1}{2}" "".format(len(exp_ids), os.linesep, messages)
             mock_print.assert_called_once_with("OK: ", output)
 
 
@@ -178,9 +174,7 @@ def test_check_passed_by_existence(subnets, ids):
         with mock.patch("check_resources.print") as mock_print:
             check("subnet", ids=ids)
             messages = os.linesep.join("subnet '{}' exists".format(_id) for _id in ids)
-            output = "subnets {0}/{0} passed{1}{2}" "".format(
-                len(ids), os.linesep, messages
-            )
+            output = "subnets {0}/{0} passed{1}{2}" "".format(len(ids), os.linesep, messages)
             mock_print.assert_called_once_with("OK: ", output)
 
 
@@ -188,11 +182,7 @@ def conn_network_port_returns(ports):
     def _conn_network_port_returns(*args, **kwargs):
         if kwargs.get("device_owner") in ["network:dhcp", "network:distributed"]:
             for port in ports:
-                return [
-                    port
-                    for port in ports
-                    if port.device_owner == kwargs.get("device_owner")
-                ]
+                return [port for port in ports if port.device_owner == kwargs.get("device_owner")]
         return ports
 
     return _conn_network_port_returns
@@ -200,7 +190,7 @@ def conn_network_port_returns(ports):
 
 def conn_network_ips_returns(ips):
     def _conn_network_ips_returns(*args, **kwargs):
-        l = []  # noqa
+        l = []  # noqa: E741
         for ip in ips:
             check = True
             for k, v in kwargs.items():
@@ -273,7 +263,7 @@ def test_check_port_return(capsys, ports, exp_out):
                 {"id_": "3", "status": "DOWN", "fixed_ip_address": None},
                 {"id_": "4", "status": "DOWN", "fixed_ip_address": None},
             ],
-            "WARNING: floating-ips 2/4 in UNKNOWN, 2/4 passed\nfloating-ip '4' is in unassigned status\nfloating-ip '3' is in unassigned status\nfloating-ip '2' is in ACTIVE status\nfloating-ip '1' is in ACTIVE status",  # noqa
+            "WARNING: floating-ips 2/4 in UNKNOWN, 2/4 passed\nfloating-ip '4' is in unassigned status\nfloating-ip '3' is in unassigned status\nfloating-ip '2' is in ACTIVE status\nfloating-ip '1' is in ACTIVE status",
         ),
     ],
 )

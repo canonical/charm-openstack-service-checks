@@ -69,9 +69,7 @@ def horizon_login(dashboard_url, domain, username, password):
     }
 
     try:
-        response = client.post(
-            login_url, data=login_data, headers={"Referer": login_url}
-        )
+        response = client.post(login_url, data=login_data, headers={"Referer": login_url})
     except HTTPError:
         raise nagios_plugin3.CriticalError("Horizon login failed: bad HTTP response")
 

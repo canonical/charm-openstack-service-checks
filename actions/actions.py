@@ -24,9 +24,9 @@ import charmhelpers.core.unitdata as unitdata
 # Load modules from $CHARM_DIR/lib
 sys.path.append("lib")
 
-import charms.reactive  # NOQA: E402
-from charms.layer import basic  # NOQA: E402
-from charms.reactive.flags import clear_flag  # NOQA: E402
+import charms.reactive  # noqa: E402
+from charms.layer import basic  # noqa: E402
+from charms.reactive.flags import clear_flag  # noqa: E402
 
 basic.bootstrap_charm_deps()
 basic.init_config_states()

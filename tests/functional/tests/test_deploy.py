@@ -28,9 +28,7 @@ class TestOpenStackServiceChecks(TestBase):
 
     def test_01_verify_default_nrpe_checks(self):
         """Verify nrpe check exists."""
-        logging.debug(
-            "Verify the nrpe checks are created and have the required content..."
-        )
+        logging.debug("Verify the nrpe checks are created and have the required content...")
 
         filenames = [
             "/etc/nagios/nrpe.d/check_{service}_{endpoint}.cfg".format(
@@ -56,9 +54,7 @@ class TestOpenStackServiceChecks(TestBase):
             code = result.get("Code")
             if code != "0":
                 logging.warning(
-                    "Unable to find nrpe check {} at /etc/nagios/nrpe.d/".format(
-                        nrpe_check
-                    )
+                    "Unable to find nrpe check {} at /etc/nagios/nrpe.d/".format(nrpe_check)
                 )
 
                 raise model.CommandRunFailed(cmd, result)
@@ -133,9 +129,7 @@ class TestOpenStackServiceChecks(TestBase):
     def test_05_openstackservicechecks_enable_contrail_analytics_vip(self):
         """Verify contrail analytics VIP is enabled."""
         filename = "/etc/nagios/nrpe.d/check_contrail_analytics_alarms.cfg"
-        model.set_application_config(
-            self.application_name, {"contrail_analytics_vip": ""}
-        )
+        model.set_application_config(self.application_name, {"contrail_analytics_vip": ""})
         model.block_until_all_units_idle()
         cmd = "cat {}".format(filename)
         result = model.run_on_unit(self.lead_unit_name, cmd)
@@ -156,17 +150,13 @@ class TestOpenStackServiceChecks(TestBase):
     def test_06_openstackservicechecks_disable_check_neutron_agents(self):
         """Verify neutron agent check is disabled."""
         filename = "/etc/nagios/nrpe.d/check_neutron_agents.cfg"
-        model.set_application_config(
-            self.application_name, {"check-neutron-agents": "false"}
-        )
+        model.set_application_config(self.application_name, {"check-neutron-agents": "false"})
         model.block_until_all_units_idle()
         cmd = "cat {}".format(filename)
         result = model.run_on_unit(self.lead_unit_name, cmd)
         self.assertTrue(result.get("Code") != "0")
 
-        model.set_application_config(
-            self.application_name, {"check-neutron-agents": "true"}
-        )
+        model.set_application_config(self.application_name, {"check-neutron-agents": "true"})
         model.block_until_all_units_idle()
         result = model.run_on_unit(self.lead_unit_name, cmd)
         content = result.get("Stdout")
@@ -198,8 +188,7 @@ class TestOpenStackServiceChecks(TestBase):
     def test_09_openstackservicechecks_configuration_resources_check(self):
         """Verify the functionality of the resource check configuration."""
         exp_command = (
-            "command[check_servers]=/usr/local/lib/nagios/plugins/check_resources.py "
-            "server"
+            "command[check_servers]=/usr/local/lib/nagios/plugins/check_resources.py " "server"
         )
         cmd = "cat /etc/nagios/nrpe.d/check_servers.cfg"
 
@@ -252,9 +241,7 @@ class TestOpenStackServiceChecks(TestBase):
             model.get_application("mysql-innodb-cluster")
             model.get_application("prometheus2")
         except KeyError:
-            raise unittest.SkipTest(
-                "Application mysql-innodb-cluster or prometheus2 not exists"
-            )
+            raise unittest.SkipTest("Application mysql-innodb-cluster or prometheus2 not exists")
         filename = "/etc/nagios/nrpe.d/check_mysql_innodb_cluster.cfg"
         cmd = "cat {}".format(filename)
         result = model.run_on_unit(self.lead_unit_name, cmd)
@@ -272,9 +259,9 @@ class TestOpenStackServiceChecks(TestBase):
         """
         lead_keystone = model.get_lead_unit_name("keystone", model_name=self.model_name)
         kst_cfg = model.get_application_config("keystone")
-        default_port = kst_cfg["service-port"].get("value") or kst_cfg[
-            "service-port"
-        ].get("default")
+        default_port = kst_cfg["service-port"].get("value") or kst_cfg["service-port"].get(
+            "default"
+        )
         new_svc_port = int(default_port) + 1
         model.block_until_all_units_idle()
         model.set_application_config("keystone", {"service-port": str(new_svc_port)})
@@ -293,9 +280,7 @@ class TestOpenStackServiceChecks(TestBase):
             "resources. Check keystone server health. View juju logs for "
             "more info."
         )
-        osc_unit = model.get_units(
-            "openstack-service-checks", model_name=self.model_name
-        )[0]
+        osc_unit = model.get_units("openstack-service-checks", model_name=self.model_name)[0]
         status_msg = osc_unit.workload_status_message
         model.run_action(lead_keystone, "resume")
         model.set_application_config("keystone", {"service-port": str(default_port)})
