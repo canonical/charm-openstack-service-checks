@@ -310,12 +310,14 @@ def mechanism_warning_ids(connection, resource_type) -> Dict[str, str]:
                     server = connection.compute.get_server(port.device_id)
                     if server.power_state == 4:  # 4 is SHUTOFF state
                         warn_ids[port.id] = "SHUTOFF"
-            except openstack.exceptions.ResourceNotFound:
-                # device_id won't be available for internal ports, and we don't
-                # expect them to be shutdown deliberately either. Basically,
-                # for any reason, if power_state can't be determined, we ignore
-                # them, and they'll be reported as CRITICAL as before.
-                pass
+            # If device_id isn't available (e.g. internal ports) or
+            # some other error occurred. Basically, for any reason,
+            # if power_state can't be determined, we ignore
+            # them, and they'll be reported as CRITICAL as before.
+            except openstack.exception.ResourceNotFound:
+                logger.info(f"'device_id' not found for port {port.id}")
+            except Exception as e:
+                logger.error(f"Unexpected error: {e}")
 
     return warn_ids
 
