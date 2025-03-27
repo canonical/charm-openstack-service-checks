@@ -1,5 +1,6 @@
 """Helper library for openstack-service-checks charm."""
 
+import base64
 import collections
 import configparser
 import glob
@@ -35,6 +36,8 @@ os.environ["REQUESTS_CA_BUNDLE"] = "/etc/ssl/certs/ca-certificates.crt"
 # files.plugins.check_resources
 RESOURCES_CHECKS_BY_EXISTENCE = ["security-group", "subnet", "network"]
 RESOURCES_CHECKS_WITH_STATUS = ["server", "floating-ip", "port"]
+
+CERT_DIR = "/usr/local/share/ca-certificates/"
 
 
 class OSCCredentialsError(Exception):
@@ -1230,3 +1233,43 @@ class OSCHelper:
                 return cinder_name.rsplit("v", maxsplit=1)[1]
             except IndexError as err:
                 raise ValueError(f"Cinder API version {cinder_name} has unknown format") from err
+
+    def process_trusted_ssl_certs(self, trusted_ssl_ca):
+        trusted_ssl_ca = trusted_ssl_ca.strip()
+        if not trusted_ssl_ca:
+            return True  # Nothing to do
+
+        hookenv.log("Writing ssl ca cert:{}".format(trusted_ssl_ca))
+        cert_content = base64.b64decode(trusted_ssl_ca).decode()
+        certs = cert_content.split("-----END CERTIFICATE-----")
+        certs = [cert.strip() + "\n-----END CERTIFICATE-----\n" for cert in certs if cert.strip()]
+
+        for existing_cert in glob.glob(os.path.join(CERT_DIR, "openstack-service-checks*.crt")):
+            try:
+                os.remove(existing_cert)
+            except OSError as error:
+                hookenv.log(
+                    "Failed to remove existing cert {cert_file}: {error}".format(
+                        cert_file=existing_cert, error=error
+                    ),
+                    hookenv.ERROR,
+                )
+
+        for idx, cert in enumerate(certs):
+            cert_file = os.path.join(CERT_DIR, f"openstack-service-checks-{idx + 1}.crt")
+            try:
+                with open(cert_file, "w") as fd:
+                    fd.write(cert)
+            except IOError as error:
+                hookenv.log(
+                    "Failed to write cert {cert_file}: {error}".format(
+                        cert_file=cert_file, error=error
+                    ),
+                    hookenv.ERROR,
+                )
+                hookenv.status_set(
+                    "blocked", "Error writing cert {}. check logs".format(cert_file)
+                )
+                return False
+
+        return True
