@@ -7,10 +7,12 @@ from os.path import abspath, dirname, join
 import pytest
 
 TEST_DIR = dirname(abspath(__file__))
-REACTIVE_DIR = dirname(dirname(TEST_DIR))
-CHARM_DIR = REACTIVE_DIR
+PROJECT_ROOT_DIR = dirname(dirname(TEST_DIR))
+CHARM_DIR = join(PROJECT_ROOT_DIR, "src")
+LIB_DIR = join(CHARM_DIR, "lib")
 FILES_DIR = join(CHARM_DIR, "files")
 CHECKS_DIR = join(FILES_DIR, "plugins")
+sys.path.append(LIB_DIR)
 sys.path.append(FILES_DIR)
 sys.path.append(CHECKS_DIR)
 
@@ -44,7 +46,7 @@ def mock_hookenv_config(monkeypatch):
 
     def mock_config():
         cfg = {}
-        yml = yaml.safe_load(open("./config.yaml"))
+        yml = yaml.safe_load(open(join(CHARM_DIR, "config.yaml")))
 
         # Load all defaults
         for key, value in yml["options"].items():
