@@ -10,3 +10,5 @@ requests>=2.18.4
 netifaces
 keystoneauth1
 python-keystoneclient
+# Can only run in toxinidir
+./tests/nagios_plugin/

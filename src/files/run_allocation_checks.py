@@ -9,9 +9,7 @@ import subprocess
 from collections import defaultdict, namedtuple
 
 import openstack
-
 import os_client_config
-
 
 NAGIOS_STATUS_OK = 0
 NAGIOS_STATUS_WARNING = 1

@@ -9,17 +9,13 @@ import re
 import subprocess
 from urllib.parse import urlparse
 
-
+import keystoneauth1
 from charmhelpers import fetch
 from charmhelpers.contrib.charmsupport.nrpe import NRPE
 from charmhelpers.contrib.openstack.utils import config_flags_parser
 from charmhelpers.core import hookenv, host, unitdata
 from charmhelpers.core.templating import render
-
 from charms.reactive import any_file_changed, endpoint_from_name
-
-import keystoneauth1
-
 from keystoneclient import session
 
 # `requests` relies on package `certifi` to find ca certs.
@@ -899,15 +895,15 @@ class OSCHelper:
             )
 
         if int(creds.get("auth_version", 0)) >= 3:
-            from keystoneclient.v3 import client
             from keystoneclient.auth.identity import v3 as kst_version
+            from keystoneclient.v3 import client
 
             auth_fields = (
                 "username password auth_url user_domain_name " "project_domain_name project_name"
             ).split()
         else:
-            from keystoneclient.v2_0 import client
             from keystoneclient.auth.identity import v2 as kst_version
+            from keystoneclient.v2_0 import client
 
             auth_fields = "username password auth_url tenant_name".split()
 

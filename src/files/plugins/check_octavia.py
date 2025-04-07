@@ -11,7 +11,6 @@ from datetime import datetime, timedelta
 
 import openstack
 
-
 Alarm = collections.namedtuple("Alarm", "lvl, desc")
 DEFAULT_IGNORED = r""
 NAGIOS_STATUS_OK = 0

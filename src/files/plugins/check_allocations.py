@@ -5,10 +5,7 @@ import json
 import os
 import sys
 
-from nagios_plugin3 import (
-    check_file_freshness,
-    try_check,
-)
+from nagios_plugin3 import check_file_freshness, try_check
 
 NAGIOS_STATUS_OK = 0
 NAGIOS_STATUS_WARNING = 1

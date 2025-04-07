@@ -5,9 +5,7 @@ import unittest.mock as mock
 from argparse import Namespace
 
 import check_mysql_innodb_cluster
-
 import pytest
-
 
 OK_RESP_DATA = {
     "status": "success",

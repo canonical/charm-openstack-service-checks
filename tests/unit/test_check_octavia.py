@@ -5,9 +5,7 @@ from datetime import datetime, timedelta
 from uuid import uuid4
 
 import check_octavia
-
 import pytest
-
 
 LB_CRITICAL_MESSAGE = """
 CRITICAL: total_alarms[1], total_crit[1], total_ignored[0], ignoring r''

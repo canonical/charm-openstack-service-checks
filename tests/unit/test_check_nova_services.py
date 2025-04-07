@@ -1,9 +1,7 @@
 """Test nova-services-check nagios plugin."""
 
 import check_nova_services
-
 import nagios_plugin3
-
 import pytest
 
 

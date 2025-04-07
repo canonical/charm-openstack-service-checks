@@ -7,7 +7,6 @@ import os
 import re
 import sys
 
-
 # ie. {0} tempest.test.test1 ... success
 TEMPEST_TEST_RE = r"{\d+} [.\w]+ ... (\w+)"
 INPUT_FILE = "/home/nagiososc/rally.status"

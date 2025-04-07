@@ -6,11 +6,9 @@ import tempfile
 from unittest import mock
 from unittest.mock import MagicMock
 
-from check_resources import Results, check, parse_arguments, set_openstack_credentials
-
-from nagios_plugin3 import CriticalError, WarnError
-
 import pytest
+from check_resources import Results, check, parse_arguments, set_openstack_credentials
+from nagios_plugin3 import CriticalError, WarnError
 
 
 class FakeResource:
