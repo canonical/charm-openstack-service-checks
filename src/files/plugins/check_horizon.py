@@ -6,7 +6,6 @@ import os
 import subprocess
 
 import nagios_plugin3
-
 import requests
 from requests.exceptions import ConnectionError, HTTPError, RequestException, Timeout
 

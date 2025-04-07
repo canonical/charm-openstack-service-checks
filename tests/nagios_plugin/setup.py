@@ -6,7 +6,6 @@ from tempfile import TemporaryDirectory
 
 from setuptools import setup
 
-
 with TemporaryDirectory() as tempd:
     URL = "https://git.launchpad.net/nrpe-charm/plain/files/nagios_plugin3.py"
     script = os.path.join(tempd, os.path.basename(URL))

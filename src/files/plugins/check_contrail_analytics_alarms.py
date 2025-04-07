@@ -10,9 +10,7 @@ import re
 import subprocess
 
 import nagios_plugin3
-
 import os_client_config
-
 import requests
 
 DEFAULT_IGNORED = r""

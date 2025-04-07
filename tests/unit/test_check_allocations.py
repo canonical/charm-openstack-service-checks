@@ -4,7 +4,6 @@ import json
 import unittest.mock as mock
 
 import pytest
-
 import run_allocation_checks
 
 

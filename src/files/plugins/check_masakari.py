@@ -5,9 +5,8 @@ import os
 import subprocess
 import sys
 
-from keystoneauth1.exceptions.catalog import EndpointNotFound
-
 import openstack
+from keystoneauth1.exceptions.catalog import EndpointNotFound
 
 NAGIOS_STATUS_OK = 0
 NAGIOS_STATUS_WARNING = 1

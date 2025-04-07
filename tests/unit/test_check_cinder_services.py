@@ -1,9 +1,7 @@
 """Test Cinder Service Checks."""
 
 import check_cinder_services
-
 import nagios_plugin3
-
 import pytest
 
 

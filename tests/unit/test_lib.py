@@ -3,10 +3,9 @@
 from unittest import mock
 from unittest.mock import ANY, MagicMock, mock_open
 
-from charmhelpers.core import hookenv
-
 import keystoneauth1
-
+import pytest
+from charmhelpers.core import hookenv
 from lib_openstack_service_checks import (
     OSCConfigError,
     OSCHelper,
@@ -14,8 +13,6 @@ from lib_openstack_service_checks import (
     OSCKeystoneServerError,
     OSCSslError,
 )
-
-import pytest
 
 
 def test_openstackservicechecks_common_properties(openstackservicechecks):

@@ -11,10 +11,8 @@ import os
 import subprocess
 from typing import Dict, List
 
-from nagios_plugin3 import CriticalError, UnknownError, WarnError, try_check
-
 import openstack
-
+from nagios_plugin3 import CriticalError, UnknownError, WarnError, try_check
 
 APP = os.path.splitext(os.path.basename(__file__))[0]
 logger = logging.getLogger(name=APP)

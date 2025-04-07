@@ -20,7 +20,6 @@ import base64
 import subprocess
 
 from charmhelpers.core import hookenv, host, unitdata
-
 from charms.reactive import (
     any_flags_set,
     clear_flag,
@@ -29,7 +28,6 @@ from charms.reactive import (
     when,
     when_not,
 )
-
 from lib_openstack_service_checks import (
     OSCConfigError,
     OSCCredentialsError,

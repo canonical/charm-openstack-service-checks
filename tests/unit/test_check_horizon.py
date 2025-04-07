@@ -5,11 +5,8 @@ import unittest.mock as mock
 from os.path import abspath, dirname, join
 
 import check_horizon
-
 import nagios_plugin3
-
 import pytest
-
 from requests.exceptions import ConnectionError, HTTPError, RequestException, Timeout
 
 TEST_DIR = dirname(abspath(__file__))

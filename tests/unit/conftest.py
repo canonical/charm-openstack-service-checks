@@ -12,9 +12,11 @@ CHARM_DIR = join(PROJECT_ROOT_DIR, "src")
 LIB_DIR = join(CHARM_DIR, "lib")
 FILES_DIR = join(CHARM_DIR, "files")
 CHECKS_DIR = join(FILES_DIR, "plugins")
+NAGIOS_LIB_DIR = join(PROJECT_ROOT_DIR, "tests/nagios_plugin/build/lib/")
 sys.path.append(LIB_DIR)
 sys.path.append(FILES_DIR)
 sys.path.append(CHECKS_DIR)
+sys.path.append(NAGIOS_LIB_DIR)
 
 
 # If layer options are used, add this to openstackservicechecks

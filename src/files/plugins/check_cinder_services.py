@@ -6,7 +6,6 @@ import os
 import subprocess
 
 import nagios_plugin3
-
 import os_client_config
 
 
