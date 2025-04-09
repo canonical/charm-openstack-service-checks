@@ -16,7 +16,6 @@ Available states:
     openstack-service-checks.started: if not set, restart nagios-nrpe-server
     openstack-service-checks.stored-creds: kst creds available for the unit
 """
-import base64
 import subprocess
 
 from charmhelpers.core import hookenv, host, unitdata
@@ -28,7 +27,6 @@ from lib_openstack_service_checks import (
     OSCKeystoneError,
 )
 
-CERT_FILE = "/usr/local/share/ca-certificates/openstack-service-checks.crt"
 helper = OSCHelper()
 
 
@@ -189,23 +187,15 @@ def render_config():
     if not creds:
         return
 
-    if helper.charm_config["trusted_ssl_ca"].strip():
-        trusted_ssl_ca = helper.charm_config["trusted_ssl_ca"].strip()
-        hookenv.log("Writing ssl ca cert:{}".format(trusted_ssl_ca))
-        cert_content = base64.b64decode(trusted_ssl_ca).decode()
-        try:
-            with open(CERT_FILE, "w") as fd:
-                fd.write(cert_content)
-            subprocess.call(["/usr/sbin/update-ca-certificates", "--fresh"])
+    if not helper.process_trusted_ssl_certs(helper.charm_config["trusted_ssl_ca"]):
+        return
 
-        except subprocess.CalledProcessError as error:
-            hookenv.log("update-ca-certificates failed: {}".format(error), hookenv.ERROR)
-            hookenv.status_set("blocked", "update-ca-certificates error. check logs")
-            return
-        except PermissionError as error:
-            hookenv.log("update-ca-certificates failed: {}".format(error), hookenv.ERROR)
-            hookenv.status_set("blocked", "update-ca-certificates error. check logs")
-            return
+    try:
+        subprocess.call(["/usr/sbin/update-ca-certificates", "--fresh"])
+    except (subprocess.CalledProcessError, PermissionError) as error:
+        hookenv.log("update-ca-certificates failed: {}".format(error), hookenv.ERROR)
+        hookenv.status_set("blocked", "update-ca-certificates error. check logs")
+        return
 
     hookenv.log("render_config: Got credentials for" " username={}".format(creds.get("username")))
 

@@ -249,6 +249,48 @@ class TestOpenStackServiceChecks(TestBase):
 
         self.assertEqual(result.get("Code"), "0")
 
+    def test_12_trusted_ssl_ca_renders_multiple_cert_files(self):
+        """Verify multiple certs in trusted_ssl_ca are rendered correctly."""
+        import base64
+
+        dummy_cert_path = "/usr/local/share/ca-certificates/openstack-service-checks.crt"
+        create_dummy_cmd = f"echo 'DUMMY CERT' | sudo tee {dummy_cert_path}"
+        result = model.run_on_unit(self.lead_unit_name, create_dummy_cmd)
+        self.assertEqual(result.get("Code"), "0", "Failed to create dummy cert")
+
+        check_cmd = f"test -f {dummy_cert_path}"
+        result = model.run_on_unit(self.lead_unit_name, check_cmd)
+        self.assertEqual(result.get("Code"), "0", "Dummy cert file not found before config set")
+
+        cert_1 = """-----BEGIN CERTIFICATE-----
+MIIDXTCCAkWgAwIBAgIJAK1bz5Gx4z5NMA0GCSqGSIb3DQEBCwUAMEUxCzAJBgNV
+...
+-----END CERTIFICATE-----"""
+        cert_2 = """-----BEGIN CERTIFICATE-----
+MIIFazCCA1OgAwIBAgIQBGQ7r...
+...
+-----END CERTIFICATE-----"""
+
+        combined_cert = cert_1 + "\n" + cert_2
+        encoded_cert = base64.b64encode(combined_cert.encode()).decode()
+
+        model.set_application_config(self.application_name, {"trusted_ssl_ca": encoded_cert})
+        model.block_until_all_units_idle()
+
+        result = model.run_on_unit(self.lead_unit_name, check_cmd)
+        self.assertNotEqual(result.get("Code"), "0", "Old dummy cert file still exists")
+
+        for idx in range(1, 3):
+            cert_file_path = f"/usr/local/share/ca-certificates/openstack-service-checks-{idx}.crt"
+            cmd = f"test -f {cert_file_path}"
+            result = model.run_on_unit(self.lead_unit_name, cmd)
+            self.assertEqual(result.get("Code"), "0", f"Cert file {cert_file_path} does not exist")
+
+        cmd = "ls -l /etc/ssl/certs/ca-certificates.crt"
+        result = model.run_on_unit(self.lead_unit_name, cmd)
+        self.assertEqual(result.get("Code"), "0")
+        self.assertIn("ca-certificates.crt", result.get("Stdout"))
+
     def test_99_openstackservicechecks_invalid_keystone_workload_status(self):
         """Verify keystone workload status.
 

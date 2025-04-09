@@ -1,5 +1,6 @@
 """Test helper library functions."""
 
+import base64
 from unittest import mock
 from unittest.mock import ANY, MagicMock, mock_open
 
@@ -957,3 +958,53 @@ def test_get_cinder_api_version_exceptions(
         else:
             OSCHelper().get_cinder_api_version()
             mock_log.assert_any_call(err_msg, hookenv.WARNING)
+
+
+@mock.patch("os.remove")
+@mock.patch("glob.glob")
+@mock.patch("builtins.open", new_callable=mock_open)
+@mock.patch("charmhelpers.core.hookenv.config", return_value={})
+def test_process_trusted_ssl_certs(
+    mock_config,
+    mock_open_call,
+    mock_glob,
+    mock_os_remove,
+):
+    trusted_cert = """-----BEGIN CERTIFICATE-----\nMIID...\n-----END CERTIFICATE-----"""
+    encoded_cert = base64.b64encode(trusted_cert.encode()).decode()
+
+    mock_glob.return_value = [
+        "/usr/local/share/ca-certificates/openstack-service-checks-1.crt",
+        "/usr/local/share/ca-certificates/openstack-service-checks-2.crt",
+    ]
+
+    result = OSCHelper().process_trusted_ssl_certs(encoded_cert)
+
+    assert mock_os_remove.call_count == 2
+    mock_os_remove.assert_any_call(
+        "/usr/local/share/ca-certificates/openstack-service-checks-1.crt"
+    )
+    mock_os_remove.assert_any_call(
+        "/usr/local/share/ca-certificates/openstack-service-checks-2.crt"
+    )
+
+    mock_open_call.assert_called_once_with(
+        "/usr/local/share/ca-certificates/openstack-service-checks-1.crt", "w"
+    )
+    mock_open_call().write.assert_called_once_with(trusted_cert + "\n")
+
+    assert result is True
+
+
+@mock.patch("glob.glob", return_value=[])
+@mock.patch("charmhelpers.core.hookenv.config", return_value={})
+def test_process_trusted_ssl_certs_write_failure(mock_config, mock_glob):
+    trusted_cert = """-----BEGIN CERTIFICATE-----\nMIID...\n-----END CERTIFICATE-----"""
+    encoded_cert = base64.b64encode(trusted_cert.encode()).decode()
+
+    with mock.patch("builtins.open", mock_open()) as mocked_file:
+        mocked_file.side_effect = IOError("Permission denied")
+
+        result = OSCHelper().process_trusted_ssl_certs(encoded_cert)
+
+    assert result is False
