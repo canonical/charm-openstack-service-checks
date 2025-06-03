@@ -312,7 +312,7 @@ def mechanism_warning_ids(connection, resource_type) -> Dict[str, str]:
             # some other error occurred. Basically, for any reason,
             # if power_state can't be determined, we ignore
             # them, and they'll be reported as CRITICAL as before.
-            except openstack.exception.ResourceNotFound:
+            except openstack.exceptions.ResourceNotFound:
                 logger.info(f"'device_id' not found for port {port.id}")
             except Exception as e:
                 logger.error(f"Unexpected error: {e}")
