@@ -1,7 +1,9 @@
+> [!NOTE]
+> This charm is under maintenance mode. Only critical bug will be handled.
+
 # Overview
 
 This charm provides OpenStack service checks for Nagios
-
 
 # Usage
 
