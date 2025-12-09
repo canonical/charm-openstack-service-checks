@@ -853,7 +853,15 @@ class OSCHelper:
                     check_ssl_cert_options=check_ssl_cert_options,
                     enabled=endpoint.enabled,
                 )
-                check_http_options.append("-S")
+                check_http_options.extend(
+                    [
+                        "-S",
+                        # Due a fix for https://bugs.launchpad.net/bugs/cve/2025-23048
+                        # apache now actually requires sni headers to be set
+                        # or the check will fail with a 421: Misdirected Request
+                        "--sni",
+                    ]
+                )
 
             nrpe_shortname = "{}_{}".format(service_name, endpoint.interface)
             self._render_http_endpoint_checks(
@@ -872,7 +880,7 @@ class OSCHelper:
                 remove_log="Removed nrpe http endpoint check for {}, {}".format(
                     service_name, endpoint.interface
                 ),
-                check_http_options="".join(check_http_options),
+                check_http_options=" ".join(check_http_options),
                 enabled=endpoint.enabled,
             )
 
